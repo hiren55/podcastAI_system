@@ -43,7 +43,7 @@ const GenerateThumbnail = ({ setImage, setImageStorageId, image, imagePrompt, se
       })
     } catch (error) {
       console.log(error)
-      toast({ title: 'Error generating thumbnail', variant: 'destructive'})
+      toast({ title: 'Error generating thumbnail', variant: 'destructive' })
     }
   }
 
@@ -54,7 +54,7 @@ const GenerateThumbnail = ({ setImage, setImageStorageId, image, imagePrompt, se
       handleImage(blob, `thumbnail-${uuidv4()}`);
     } catch (error) {
       console.log(error)
-      toast({ title: 'Error generating thumbnail', variant: 'destructive'})
+      toast({ title: 'Error generating thumbnail', variant: 'destructive' })
     }
   }
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,102 +65,145 @@ const GenerateThumbnail = ({ setImage, setImageStorageId, image, imagePrompt, se
       if (!files) return;
       const file = files[0];
       const blob = await file.arrayBuffer()
-      .then((ab) => new Blob([ab]));
+        .then((ab) => new Blob([ab]));
 
       handleImage(blob, file.name);
     } catch (error) {
       console.log(error)
-      toast({ title: 'Error uploading image', variant: 'destructive'})
+      toast({ title: 'Error uploading image', variant: 'destructive' })
     }
   }
 
   return (
-    <>
-      <div className="generate_thumbnail">
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-2xl font-bold text-slate-800 mb-2">Podcast Thumbnail</h3>
+        <p className="text-slate-600">Create a stunning thumbnail for your podcast</p>
+      </div>
+
+      {/* Toggle Buttons */}
+      <div className="flex gap-4 justify-center">
         <Button
           type="button"
-          variant="plain"
-          onClick={() => setIsAiThumbnail(true)} 
-          className={cn('', {
-            'bg-black-6': isAiThumbnail
-          })}
+          variant={isAiThumbnail ? "gradientAccent" : "outline"}
+          onClick={() => setIsAiThumbnail(true)}
+          className="px-6 py-3 font-semibold rounded-xl transition-all duration-300"
         >
-          Use AI to generate thumbnail
+          <div className="flex items-center gap-2">
+            <span>🤖</span>
+            <span>AI Generate</span>
+          </div>
         </Button>
         <Button
           type="button"
-          variant="plain"
-          onClick={() => setIsAiThumbnail(false)} 
-          className={cn('', {
-            'bg-black-6': !isAiThumbnail
-          })}
+          variant={!isAiThumbnail ? "gradientAccent" : "outline"}
+          onClick={() => setIsAiThumbnail(false)}
+          className="px-6 py-3 font-semibold rounded-xl transition-all duration-300"
         >
-          Upload custom image
+          <div className="flex items-center gap-2">
+            <span>📁</span>
+            <span>Upload Image</span>
+          </div>
         </Button>
       </div>
+
       {isAiThumbnail ? (
-        <div className="flex flex-col gap-5">
-          <div className="mt-5 flex flex-col gap-2.5">
-            <Label className="text-16 font-bold text-white-1">
-              AI Prompt to generate Thumbnail
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <Label className="block text-sm font-semibold text-slate-700">
+              AI Prompt for Thumbnail Generation
             </Label>
-            <Textarea 
-              className="input-class font-light focus-visible:ring-offset-orange-1"
-              placeholder='Provide text to generate thumbnail'
+            <Textarea
+              className="form-textarea-white w-full"
+              placeholder='Describe the thumbnail you want to generate...'
               rows={5}
               value={imagePrompt}
               onChange={(e) => setImagePrompt(e.target.value)}
             />
           </div>
-          <div className="w-full max-w-[200px]">
-          <Button type="submit" className="text-16 bg-orange-1 py-4 font-bold text-white-1" onClick={generateImage}>
-            {isImageLoading ? (
-              <>
-                Generating
-                <Loader size={20} className="animate-spin ml-2" />
-              </>
-            ) : (
-              'Generate'
-            )}
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant="gradientAccent"
+              className="px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              onClick={generateImage}
+              disabled={isImageLoading || !imagePrompt.trim()}
+            >
+              {isImageLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader size={20} className="animate-spin" />
+                  <span>Generating...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span>🎨</span>
+                  <span>Generate Thumbnail</span>
+                </div>
+              )}
+            </Button>
           </div>
         </div>
       ) : (
-        <div className="image_div" onClick={() => imageRef?.current?.click()}>
-          <Input 
+        <div
+          className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-slate-400 hover:bg-slate-50 transition-all duration-300"
+          onClick={() => imageRef?.current?.click()}
+        >
+          <Input
             type="file"
             className="hidden"
             ref={imageRef}
             onChange={(e) => uploadImage(e)}
+            accept="image/*"
           />
           {!isImageLoading ? (
-            <Image src="/icons/upload-image.svg" width={40} height={40} alt="upload" />
-          ): (
-            <div className="text-16 flex-center font-medium text-white-1">
-              Uploading
-              <Loader size={20} className="animate-spin ml-2" />
+            <div className="space-y-4">
+              <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                <Image src="/icons/upload-image.svg" width={32} height={32} alt="upload" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-1">Click to upload</h3>
+                <p className="text-sm text-slate-600">SVG, PNG, JPG, or GIF (max. 1080x1080px)</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="w-16 h-16 mx-auto bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                <Loader size={24} className="animate-spin text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800">Uploading...</h3>
+                <p className="text-sm text-slate-600">Please wait while we process your image</p>
+              </div>
             </div>
           )}
-          <div className="flex flex-col items-center gap-1">
-           <h2 className="text-12 font-bold text-orange-1">
-            Click to upload
-            </h2>
-            <p className="text-12 font-normal text-gray-1">SVG, PNG, JPG, or GIF (max. 1080x1080px)</p> 
+        </div>
+      )}
+
+      {image && (
+        <div className="space-y-4">
+          <div className="text-center">
+            <h4 className="text-lg font-semibold text-slate-800 mb-2">Generated Thumbnail</h4>
+            <p className="text-sm text-slate-600">Preview of your podcast thumbnail</p>
+          </div>
+          <div className="flex justify-center">
+            <div className="relative group">
+              <Image
+                src={image}
+                width={300}
+                height={300}
+                className="rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
+                alt="thumbnail"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-xl transition-all duration-300 flex items-center justify-center">
+                <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-semibold">
+                  Click to view full size
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}
-      {image && (
-        <div className="flex-center w-full">
-          <Image 
-            src={image}
-            width={200}
-            height={200}
-            className="mt-5"
-            alt="thumbnail"
-          />
-        </div>
-      )}
-    </>
+    </div>
   )
 }
 

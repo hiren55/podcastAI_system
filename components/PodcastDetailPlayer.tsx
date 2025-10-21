@@ -25,36 +25,19 @@ const PodcastDetailPlayer = ({
   authorId,
 }: PodcastDetailPlayerProps) => {
   const router = useRouter();
-  const { setAudio } = useAudio();
-  const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
-  const deletePodcast = useMutation(api.podcasts.deletePodcast);
-
-  const handleDelete = async () => {
-    try {
-      await deletePodcast({ podcastId, imageStorageId, audioStorageId });
-      toast({
-        title: "Podcast deleted",
-      });
-      router.push("/");
-    } catch (error) {
-      console.error("Error deleting podcast", error);
-      toast({
-        title: "Error deleting podcast",
-        variant: "destructive",
-      });
-    }
-  };
+  const { playAudio } = useAudio();
 
   const handlePlay = () => {
-    setAudio({
+    playAudio({
       title: podcastTitle,
       audioUrl,
       imageUrl,
       author,
       podcastId,
+      podcastTitle: podcastTitle,
     });
   };
+
 
   if (!imageUrl || !authorImageUrl) return <LoaderSpinner />;
 

@@ -22,10 +22,10 @@ const MobileNav = () => {
         <SheetTrigger>
           <Image src="/icons/hamburger.svg" width={30} height={30} alt="menu" className="cursor-pointer" />
         </SheetTrigger>
-        <SheetContent side="left" className="border-none bg-black-1">
+        <SheetContent side="left" className="bg-black-1">
           <Link href="/" className="flex cursor-pointer items-center gap-1 pb-10 pl-4">
             <Image src="/icons/logo.svg" alt="logo" width={23} height={27} />
-            <h1 className="text-24 font-extrabold  text-white-1 ml-2">Podcastr</h1>
+            <h1 className="text-24 font-extrabold ai-gradient-text ml-2">Podcastr</h1>
           </Link>
           <div className="flex h-[calc(100vh-72px)] flex-col justify-between overflow-y-auto">
             <SheetClose asChild>
@@ -33,11 +33,15 @@ const MobileNav = () => {
               {sidebarLinks.map(({ route, label, imgURL }) => {
                 const isActive = pathname === route || pathname.startsWith(`${route}/`);
 
-                return <SheetClose asChild key={route}><Link href={route} className={cn("flex gap-3 items-center py-4 max-lg:px-4 justify-start", {
-                  'bg-nav-focus border-r-4 border-orange-1': isActive
+                return <SheetClose asChild key={route}><Link href={route} className={cn("flex gap-3 items-center py-4 max-lg:px-4 justify-start rounded-lg transition-all duration-300", {
+                  'bg-gradient-to-r from-gray-6/30 to-gray-5/30 border border-glass/50 ai-glow-text shadow-lg': isActive,
+                  'hover:bg-black-2/60': !isActive
                 })}>
                   <Image src={imgURL} alt={label} width={24} height={24} />
-                  <p>{label}</p>
+                  <p className={cn("text-lg font-medium", {
+                    'ai-glow-text': isActive,
+                    'text-tertiary': !isActive
+                  })}>{label}</p>
                 </Link></SheetClose>
               })}
               </nav>

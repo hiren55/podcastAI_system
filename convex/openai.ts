@@ -18,7 +18,7 @@ export const generateAudioAction = action({
     });
 
     const buffer = await mp3.arrayBuffer();
-    
+
     return buffer;
   },
 });
@@ -36,7 +36,7 @@ export const generateThumbnailAction = action({
 
     const url = response.data[0].url;
 
-    if(!url) {
+    if (!url) {
       throw new Error('Error generating thumbnail');
     }
 
@@ -45,3 +45,58 @@ export const generateThumbnailAction = action({
     return buffer;
   }
 })
+
+export const generateScriptAction = action({
+  args: {
+    keywords: v.string(),
+    template: v.optional(v.string()),
+    language: v.optional(v.string()),
+    minutes: v.optional(v.number()),
+  },
+  handler: async (_, { keywords, template, language, minutes }) => {
+    const system = `You are a podcast script writer. Write a clear, engaging script suitable for text-to-speech.`;
+    const tpl = template || 'Explainer';
+    const lang = language || 'English';
+    const dur = minutes && minutes > 0 ? `${minutes} minute${minutes > 1 ? 's' : ''}` : '2-4 minutes';
+    const userPrompt = `Generate a ${tpl} style podcast script in ${lang} based on these keywords: ${keywords}.
+Target length: about ${dur} of spoken audio.
+Include an intro hook, 2-3 key points with smooth transitions, and a short outro. Avoid SSML unless necessary.`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.7,
+    });
+
+    const content = completion.choices?.[0]?.message?.content || '';
+    return content;
+  }
+});
+
+export const generateThumbnailPromptAction = action({
+  args: {
+    script: v.string(),
+    title: v.optional(v.string()),
+    keywords: v.optional(v.string()),
+  },
+  handler: async (_, { script, title, keywords }) => {
+    const system = `You craft concise, vivid image prompts for podcast thumbnails. You extract key visual elements and style cues from the script, avoid text-in-image, and return a single prompt line suitable for image generation.`;
+    const user = `Title: ${title || 'Podcast'}\nKeywords: ${keywords || ''}\nScript:\n${script}\n\nReturn ONE concise prompt describing: main subject, setting, mood, color palette, and 2-3 key visual elements derived from the content. Prefer cinematic, high-contrast, modern flat illustration or photorealistic depending on context. Do NOT include words or typography in the image.`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      temperature: 0.7,
+      max_tokens: 200,
+    });
+
+    const prompt = completion.choices?.[0]?.message?.content?.trim() || '';
+    return prompt;
+  }
+});

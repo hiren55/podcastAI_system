@@ -8,8 +8,8 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_LIMIT = 3
+const TOAST_REMOVE_DELAY = 5000
 
 type ToasterToast = ToastProps & {
   id: string
@@ -36,21 +36,21 @@ type ActionType = typeof actionTypes
 
 type Action =
   | {
-      type: ActionType["ADD_TOAST"]
-      toast: ToasterToast
-    }
+    type: ActionType["ADD_TOAST"]
+    toast: ToasterToast
+  }
   | {
-      type: ActionType["UPDATE_TOAST"]
-      toast: Partial<ToasterToast>
-    }
+    type: ActionType["UPDATE_TOAST"]
+    toast: Partial<ToasterToast>
+  }
   | {
-      type: ActionType["DISMISS_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
+    type: ActionType["DISMISS_TOAST"]
+    toastId?: ToasterToast["id"]
+  }
   | {
-      type: ActionType["REMOVE_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
+    type: ActionType["REMOVE_TOAST"]
+    toastId?: ToasterToast["id"]
+  }
 
 interface State {
   toasts: ToasterToast[]
@@ -108,9 +108,9 @@ export const reducer = (state: State, action: Action): State => {
         toasts: state.toasts.map((t) =>
           t.id === toastId || toastId === undefined
             ? {
-                ...t,
-                open: false,
-              }
+              ...t,
+              open: false,
+            }
             : t
         ),
       }
@@ -144,6 +144,7 @@ type Toast = Omit<ToasterToast, "id">
 
 function toast({ ...props }: Toast) {
   const id = genId()
+  console.log('Toast triggered:', { id, props }); // Debug log
 
   const update = (props: ToasterToast) =>
     dispatch({
@@ -171,6 +172,23 @@ function toast({ ...props }: Toast) {
   }
 }
 
+// Convenience functions for different toast types
+function toastSuccess({ title, description, ...props }: Omit<Toast, "variant">) {
+  return toast({ title, description, variant: "success", ...props })
+}
+
+function toastError({ title, description, ...props }: Omit<Toast, "variant">) {
+  return toast({ title, description, variant: "destructive", ...props })
+}
+
+function toastWarning({ title, description, ...props }: Omit<Toast, "variant">) {
+  return toast({ title, description, variant: "warning", ...props })
+}
+
+function toastInfo({ title, description, ...props }: Omit<Toast, "variant">) {
+  return toast({ title, description, variant: "info", ...props })
+}
+
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 
@@ -191,4 +209,4 @@ function useToast() {
   }
 }
 
-export { useToast, toast }
+export { useToast, toast, toastSuccess, toastError, toastWarning, toastInfo }

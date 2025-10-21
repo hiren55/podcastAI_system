@@ -28,7 +28,7 @@ const useGeneratePodcast = ({
     setIsGenerating(true);
     setAudio('');
 
-    if(!voicePrompt) {
+    if (!voicePrompt) {
       toast({
         title: "Please provide a voiceType to generate a podcast",
       })
@@ -64,7 +64,7 @@ const useGeneratePodcast = ({
       })
       setIsGenerating(false);
     }
-    
+
   }
 
   return { isGenerating, generatePodcast }
@@ -74,39 +74,63 @@ const GeneratePodcast = (props: GeneratePodcastProps) => {
   const { isGenerating, generatePodcast } = useGeneratePodcast(props);
 
   return (
-    <div>
-      <div className="flex flex-col gap-2.5">
-        <Label className="text-16 font-bold text-white-1">
-          AI Prompt to generate Podcast
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-2xl font-bold text-slate-800 mb-2">AI Voice Generation</h3>
+        <p className="text-slate-600">Convert your script into natural-sounding audio</p>
+      </div>
+
+      <div className="space-y-4">
+        <Label className="block text-sm font-semibold text-slate-700">
+          Script for Voice Generation
         </Label>
-        <Textarea 
-          className="input-class font-light focus-visible:ring-offset-orange-1"
-          placeholder='Provide text to generate audio'
-          rows={5}
+        <Textarea
+          className="form-textarea-white w-full"
+          placeholder='Paste your script here to generate audio...'
+          rows={6}
           value={props.voicePrompt}
           onChange={(e) => props.setVoicePrompt(e.target.value)}
         />
       </div>
-      <div className="mt-5 w-full max-w-[200px]">
-      <Button type="submit" className="text-16 bg-orange-1 py-4 font-bold text-white-1" onClick={generatePodcast}>
-        {isGenerating ? (
-          <>
-            Generating
-            <Loader size={20} className="animate-spin ml-2" />
-          </>
-        ) : (
-          'Generate'
-        )}
-      </Button>
+
+      <div className="flex justify-center">
+        <Button
+          type="button"
+          variant="gradientAccent"
+          className="px-8 py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+          onClick={generatePodcast}
+          disabled={isGenerating || !props.voicePrompt.trim()}
+        >
+          {isGenerating ? (
+            <div className="flex items-center gap-2">
+              <Loader size={20} className="animate-spin" />
+              <span>Generating Audio...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span>🎵</span>
+              <span>Generate Audio</span>
+            </div>
+          )}
+        </Button>
       </div>
+
       {props.audio && (
-        <audio 
-          controls
-          src={props.audio}
-          autoPlay
-          className="mt-5"
-          onLoadedMetadata={(e) => props.setAudioDuration(e.currentTarget.duration)}
-        />
+        <div className="space-y-4">
+          <div className="text-center">
+            <h4 className="text-lg font-semibold text-slate-800 mb-2">Generated Audio</h4>
+            <p className="text-sm text-slate-600">Click play to listen to your generated podcast</p>
+          </div>
+          <div className="flex justify-center">
+            <audio
+              controls
+              src={props.audio}
+              autoPlay
+              className="w-full max-w-md rounded-lg shadow-lg"
+              onLoadedMetadata={(e) => props.setAudioDuration(e.currentTarget.duration)}
+            />
+          </div>
+        </div>
       )}
     </div>
   )

@@ -98,11 +98,18 @@ export interface AudioProps {
   author: string;
   imageUrl: string;
   podcastId: string;
+  playlistName?: string;
+  episodeTitle?: string;
+  podcastTitle?: string;
+  currentTime?: number;
 }
 
 export interface AudioContextType {
   audio: AudioProps | undefined;
   setAudio: React.Dispatch<React.SetStateAction<AudioProps | undefined>>;
+  playAudio: (newAudio: AudioProps) => void;
+  currentTime: number;
+  setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface PodcastCardProps {
@@ -110,6 +117,22 @@ export interface PodcastCardProps {
   title: string;
   description: string;
   podcastId: Id<"podcasts">;
+  isOwner?: boolean; // NEW: for edit button visibility
+  tags?: string[];   // NEW: for edit modal prefill
+  language?: string; // NEW: for edit modal prefill
+  onEdit?: () => void; // NEW: for triggering edit modal
+  onAddToPlaylist?: () => void; // NEW: for playlist button
+  audioUrl: string;
+  author: string;
+}
+
+export interface PlaylistProps {
+  _id: Id<'playlists'>;
+  userId: Id<'users'>;
+  name: string;
+  items: { type: 'podcast' | 'episode'; id: Id<'podcasts'> | Id<'episodes'> }[];
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface CarouselProps {
@@ -127,3 +150,16 @@ export type UseDotButtonType = {
   scrollSnaps: number[];
   onDotButtonClick: (index: number) => void;
 };
+
+export interface EpisodeProps {
+  _id: Id<'episodes'>;
+  podcastId: Id<'podcasts'>;
+  title: string;
+  description: string;
+  audioUrl?: string;
+  audioStorageId?: Id<'_storage'>;
+  language?: string;
+  tags?: string[];
+  createdAt: number;
+  updatedAt: number;
+}
