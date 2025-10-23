@@ -25,8 +25,7 @@ export default function PlaylistManager() {
     const [sheetOpen, setSheetOpen] = useState(false);
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const { toast } = useToast();
-
-    async function handleCreate() {
+        async function handleCreate() {
         if (!userId || !newPlaylistName.trim()) return;
         await createPlaylist({ userId, name: newPlaylistName.trim() });
         setNewPlaylistName('');
@@ -91,8 +90,6 @@ export default function PlaylistManager() {
                                     let author = '';
                                     let imageUrl = '';
                                     let podcastId = '';
-
-                                    const { playAudio } = useAudio();
 
                                     if (item.type === 'podcast') {
                                         const p = allPodcasts.find(p => p._id === item.id);
