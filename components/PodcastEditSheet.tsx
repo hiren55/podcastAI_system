@@ -26,19 +26,18 @@ const formSchema = z.object({
 export default function PodcastEditSheet({
     open,
     onOpenChange,
-    podcast,
+    podcastId,
+    podcastTitle,
+    podcastDescription,
+    imageUrl,
     onSuccess,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    podcast: {
-        podcastId: string;
-        podcastTitle: string;
-        podcastDescription: string;
-        imageUrl: string;
-        tags?: string[];
-        language?: string;
-    };
+    podcastId: string;
+    podcastTitle: string;
+    podcastDescription: string;
+    imageUrl: string;
     onSuccess?: () => void;
 }) {
     const { toast } = useToast();
@@ -48,11 +47,11 @@ export default function PodcastEditSheet({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            podcastTitle: podcast.podcastTitle || '',
-            podcastDescription: podcast.podcastDescription || '',
-            imageUrl: podcast.imageUrl || '',
-            tags: podcast.tags?.join(', ') || '',
-            language: podcast.language || '',
+            podcastTitle: podcastTitle || '',
+            podcastDescription: podcastDescription || '',
+            imageUrl: imageUrl || '',
+            tags: '',
+            language: '',
         },
     });
 
@@ -60,7 +59,7 @@ export default function PodcastEditSheet({
         setIsSubmitting(true);
         try {
             await editPodcast({
-                podcastId: podcast.podcastId,
+                podcastId: podcastId,
                 podcastTitle: data.podcastTitle,
                 podcastDescription: data.podcastDescription,
                 imageUrl: data.imageUrl,

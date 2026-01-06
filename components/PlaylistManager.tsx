@@ -25,6 +25,7 @@ export default function PlaylistManager() {
     const [sheetOpen, setSheetOpen] = useState(false);
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const { toast } = useToast();
+    const { audio, playAudio } = useAudio();
         async function handleCreate() {
         if (!userId || !newPlaylistName.trim()) return;
         await createPlaylist({ userId, name: newPlaylistName.trim() });
